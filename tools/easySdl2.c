@@ -2,6 +2,10 @@
 
 static t_window gMainWindow;
 
+
+const t_color DEFAULT_COLOR = {236, 240, 241, 255};
+
+
 // todo: event, drawFunction, texte, texture rotation, draw to texture
 
 void delay (int timeMs) {
@@ -12,31 +16,31 @@ void delay (int timeMs) {
 /* Initialistion and termination */
 /*********************************/
 
-int initSdl(int height, int width) {
+int initSdl(int height, int width, char * wName) {
 	Uint32 wflags = 0;
 	Uint32 rflags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE;
 	int indexDriver = -1;
 	SDL_Surface *icone = NULL;
-	
+
 	if (SDL_Init (SDL_INIT_VIDEO) != 0) {
 		fprintf (stderr, " Failure: unable to load the SDL\n %s", SDL_GetError());
 		return -1;
 	}
-	
-	gMainWindow.window = SDL_CreateWindow ("T2 d<>u", SDL_WINDOWPOS_CENTERED/*col*/, SDL_WINDOWPOS_CENTERED/*line*/, width, height, wflags);
-	
+
+	gMainWindow.window = SDL_CreateWindow (wName, SDL_WINDOWPOS_CENTERED/*col*/, SDL_WINDOWPOS_CENTERED/*line*/, width, height, wflags);
+
 	if (gMainWindow.window == NULL) {
 		fprintf (stderr, " Failure: unable to create the window (w:%d, h:%d)\n %s", width, height, SDL_GetError());
 		return -1;
 	}
-	
+
 	gMainWindow.renderer = SDL_CreateRenderer (gMainWindow.window, indexDriver, wflags);
-	
+
 	if (gMainWindow.renderer == NULL) {
 		fprintf (stderr, " Failure: unable to create the renderer\n %s", SDL_GetError());
 		return -1;
 	}
-	
+
 	icone = IMG_Load("icone.png");
 	if (icone != NULL) {
 		SDL_SetWindowIcon (gMainWindow.window, icone);
@@ -88,24 +92,22 @@ void wrender (t_window win) {
 /****************/
 
 void clear () {
-	int red = 72, green = 72, blue = 72, alpha = 255;
-	SDL_SetRenderDrawColor(gMainWindow.renderer, red, green, blue, alpha);
+	SDL_SetRenderDrawColor(gMainWindow.renderer, DEFAULT_COLOR.r, DEFAULT_COLOR.g, DEFAULT_COLOR.b, DEFAULT_COLOR.a);
 	SDL_RenderClear(gMainWindow.renderer); // nettoie
 }
 
-void clearColor (int red, int green, int blue, int alpha) {
-	SDL_SetRenderDrawColor(gMainWindow.renderer, red, green, blue, alpha);
+void clearColor (t_color color) {
+	SDL_SetRenderDrawColor(gMainWindow.renderer, color.r, color.g, color.b, color.a);
 	SDL_RenderClear(gMainWindow.renderer); // nettoie
 }
 
 void wclear (t_window win) {
-	int red = 72, green = 72, blue = 72, alpha = 255;
-	SDL_SetRenderDrawColor(win.renderer, red, green, blue, alpha);
+	SDL_SetRenderDrawColor(win.renderer, DEFAULT_COLOR.r, DEFAULT_COLOR.g, DEFAULT_COLOR.b, DEFAULT_COLOR.a);
 	SDL_RenderClear(win.renderer); // nettoie
 }
 
-void wclearColor (t_window win, int red, int green, int blue, int alpha) {
-	SDL_SetRenderDrawColor(win.renderer, red, green, blue, alpha);
+void wclearColor (t_window win, t_color color) {
+	SDL_SetRenderDrawColor(win.renderer, color.r, color.g, color.b, color.a);
 	SDL_RenderClear(win.renderer); // nettoie
 }
 
