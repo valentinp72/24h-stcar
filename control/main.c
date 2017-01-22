@@ -1,92 +1,7 @@
 #include "../tools/tools.h"
 #include "../tools/easySdl2.h"
-
-#define HEIGHT 350
-#define WIDTH  800
-
-#define LEFT_SHIFT 50
-#define TOP_SHIFT  50
-
-#define IMG_W 70
-#define IMG_H 50
-
-#define N_SPEED_TEXTURES 5
-#define N_DIR_TEXTURES 3
-
-#define SCREEN_NAME "56293.ttys000.MBP-Valentin-2"
-
-typedef struct {
-	int line, col;
-	SDL_Texture * texture;
-} t_texture;
-
-void execCommand(char * cmd){
-	char exec[1000];
-	sprintf(exec, "screen -S %s -L -p 0 -X stuff \"%s`echo -ne '\015'`\"", SCREEN_NAME, cmd);
-	system(exec);
-}
-
-void loadSpeedTextures(t_texture speedTextures[]){
-	speedTextures[0].texture  = loadTexture("media/speed_3.jpg");
-	speedTextures[1].texture  = loadTexture("media/speed_2.jpg");
-	speedTextures[2].texture  = loadTexture("media/speed_1.jpg");
-	speedTextures[3].texture  = loadTexture("media/speed_0.jpg");
-	speedTextures[4].texture  = loadTexture("media/speed_-1.jpg");
-
-	int i;
-	for(i = 0 ; i < N_SPEED_TEXTURES ; i++){
-		speedTextures[i].line = TOP_SHIFT + IMG_H * i;
-		speedTextures[i].col  = LEFT_SHIFT;
-	}
-}
-
-void loadDirTextures(t_texture dirTextures[]){
-	dirTextures[0].texture  = loadTexture("media/dir_left.jpg");
-	dirTextures[1].texture  = loadTexture("media/dir_middle.jpg");
-	dirTextures[2].texture  = loadTexture("media/dir_right.jpg");
-
-	int i;
-	for(i = 0 ; i < N_DIR_TEXTURES ; i++){
-		dirTextures[i].line = HEIGHT - (3 * IMG_H);
-		dirTextures[i].col  = LEFT_SHIFT + (i + 2)* IMG_W;
-	}
-}
-
-
-
-void unloadAllTextures(t_texture textures[], int size){
-	int i;
-	for(i = 0 ; i < size ; i++) SDL_DestroyTexture(textures[i].texture);
-}
-
-void draw(t_texture texture, int w, int h){
-	drawTexture(texture.texture, texture.line, texture.col, w, h);
-}
-
-void drawAllTextures(t_texture textures[], int size){
-	int i;
-	for(i = 0 ; i < size ; i++) drawTexture(textures[i].texture , textures[i].line, textures[i].col, IMG_W, IMG_H);
-}
-
-void changeSpeed(int speed){
-	if(speed >= -1 && speed <= 3){
-		char cmd[100];
-		sprintf(cmd, "rouler %i", speed);
-		execCommand(cmd);
-	}
-}
-
-void turn(int dir){
-	if(dir >= 0 && dir <= 2){
-		char cmd[100];
-		sprintf(cmd, "turn %i", dir);
-		execCommand(cmd);
-	}
-}
-
-int clickedOnTexture(t_texture texture, int x, int y){
-	return (y > texture.line && y < texture.line + IMG_H && x > texture.col && x < texture.col + IMG_W);
-}
+#include "commands.h"
+#include "display.h"
 
 int main(){
 
@@ -94,7 +9,7 @@ int main(){
 
     int quit = FALSE;
 	int i, found = FALSE;
-	int isLampOn = FALSE, isWindscreenOn = FALSE;
+	int isLampOn = FALSE, isTaillampOn = FALSE, isWindscreenOn = FALSE;
 
 	initSdl(HEIGHT, WIDTH, "Télécommande");
 
@@ -110,8 +25,12 @@ int main(){
 	t_texture lampOn = {TOP_SHIFT + IMG_H, LEFT_SHIFT + 2 * IMG_W, loadTexture("media/lamp_on.jpg")};
 	t_texture lampOff = {TOP_SHIFT + IMG_H, LEFT_SHIFT + 2 * IMG_W, loadTexture("media/lamp_off.jpg")};
 
+	t_texture taillampOn = {TOP_SHIFT + IMG_H, LEFT_SHIFT + 3 * IMG_W, loadTexture("media/taillamp_on.jpg")};
+	t_texture taillampOff = {TOP_SHIFT + IMG_H, LEFT_SHIFT + 3 * IMG_W, loadTexture("media/taillamp_off.jpg")};
+
 	t_texture windscreenOn = {TOP_SHIFT + IMG_H, LEFT_SHIFT + 4 * IMG_W, loadTexture("media/windscreen_on.jpg")};
 	t_texture windscreenOff = {TOP_SHIFT + IMG_H, LEFT_SHIFT + 4 * IMG_W, loadTexture("media/windscreen_off.jpg")};
+
 
 	loadSpeedTextures(speedTextures);
 	loadDirTextures(dirTextures);
@@ -120,6 +39,7 @@ int main(){
 	draw(selectionDir, IMG_W, IMG_H + 40);
 
 	draw(lampOff, IMG_W, IMG_H);
+	draw(taillampOff, IMG_W, IMG_H);
 	draw(windscreenOff, IMG_W, IMG_H);
 	drawAllTextures(speedTextures, N_SPEED_TEXTURES);
 	drawAllTextures(dirTextures, N_DIR_TEXTURES);
@@ -179,33 +99,47 @@ int main(){
 							}
 						}
 
-						// ** Lampe ** //
+						// ** Phare ** //
 						if(clickedOnTexture(lampOn, x, y)){
-							// On a appuyé sur la lampe
+							// On a appuyé sur le phare
 							if(isLampOn){
 								draw(lampOff, IMG_W, IMG_H);
-								execCommand("lamp 0");
+								execCommand("feuAv 0");
 							} else {
 								draw(lampOn, IMG_W, IMG_H);
+								execCommand("feuAv 1");
 							}
 							isLampOn = !isLampOn;
 							render();
 						}
 
+						// ** Feu arrière ** //
+						if(clickedOnTexture(taillampOn, x, y)){
+							if(isTaillampOn){
+								draw(taillampOff, IMG_W, IMG_H);
+								execCommand("feuArr 0");
+							} else {
+								draw(taillampOn, IMG_W, IMG_H);
+								execCommand("feuArr 1");
+							}
+							isTaillampOn = !isTaillampOn;
+							render();
+						}
 
 						// ** Essui glace ** //
 						if(clickedOnTexture(windscreenOn, x, y)){
 							// On a appuyé sur l'essui glace
 							if(isWindscreenOn){
 								draw(windscreenOff, IMG_W, IMG_H);
+								execCommand("essuieGlace 0");
 							} else {
 								draw(windscreenOn, IMG_W, IMG_H);
+								execCommand("essuieGlace 1");
 							}
 							isWindscreenOn = !isWindscreenOn;
 							render();
 						}
 
-						printf("x : %i ; y : %i\n", x, y);
 					}
 					break;
 				case SDL_QUIT: quit = TRUE; break;
@@ -219,6 +153,8 @@ int main(){
 
 	SDL_DestroyTexture(lampOn.texture);
 	SDL_DestroyTexture(lampOff.texture);
+	SDL_DestroyTexture(taillampOn.texture);
+	SDL_DestroyTexture(taillampOff.texture);
 	SDL_DestroyTexture(windscreenOn.texture);
 	SDL_DestroyTexture(windscreenOff.texture);
 	SDL_DestroyTexture(selectionSpeed.texture);
