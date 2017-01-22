@@ -1,7 +1,7 @@
 toolsLoc = ../tools/
 
 main: main.o commands.o display.o tools.o easySdl2.o
-	gcc -o $@ $^ -framework SDL2 -framework SDL2_image -framework SDL2_ttf
+	gcc -o $@ $^ -framework SDL2 -framework SDL2_image -framework SDL2_ttf -lm
 
 main.o: main.c commands.h display.h $(toolsLoc)tools.h $(toolsLoc)easySdl2.h
 	gcc -c $<
