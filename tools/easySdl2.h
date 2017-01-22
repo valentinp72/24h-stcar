@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
+
 
 typedef struct {
 	SDL_Renderer *renderer;
@@ -30,5 +32,8 @@ void wclearColor (t_window win, t_color color);
 
 SDL_Texture * loadTexture (char name[100]);
 SDL_Texture * wloadTexture (t_window win, char name[100]);
+
+TTF_Font * loadFont(char * font);
+void displayText(char * msg, TTF_Font *font, SDL_Color color, int x, int y, float size);
 
 #endif /* end of include guard: EASY_SDL2_H */

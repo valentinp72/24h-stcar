@@ -1,0 +1,50 @@
+ch> drive 2 1000
+ch>
+ch>
+ch>
+ch>
+ch> drive 2 1000
+ch> drive 2 10000
+ch> drive 2 10000
+ch> drive 2 10000
+ch> drive 2 1000
+ch>
+ChibiOS/RT Shell
+ch>
+ch>
+ch> drive 0 000
+ch> drive 0 000
+ch> drive 0 000
+ch>  1> /dev/ttys000
+1> ?
+ch>
+ch>
+ChibiOS/RT Shell
+ch>
+ch>
+ch>
+ch>
+ch>
+ch> drive 0 0
+ch> drive 100 00
+ch> drive 1 1000
+ch> status
+status ?
+ch> help
+Commands: help exit info systime startgps stopgps speed drive turn cligno ralentir marcheArr rouler arret arretUR
+ch> systime
+61839
+ch> systime
+64746
+ch> info
+Kernel:       2.6.10
+Compiler:     GCC 4.9.2 20141030 (Wed Jun 8 08:37:55 MSK 2016         build.sh rev= ELvle)
+Architecture: Power Architecture
+Core Variant: e200z0
+Port Info:    VLE mode
+Platform:     SPC560Dxx Car Body and Convenience
+Board:        STMicroelectronics SPC56D Discovery
+Build time:   Jan 21 2017 - 16:02:44
+ch> [A
+[A ?
+ch>

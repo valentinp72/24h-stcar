@@ -3,15 +3,21 @@
 #include "commands.h"
 #include "display.h"
 
+
+
 int main(){
 
 	SDL_Event event;
 
     int quit = FALSE;
-	int i, found = FALSE;
+	int i, found = FALSE, data = 0;
 	int isLampOn = FALSE, isTaillampOn = FALSE, isWindscreenOn = FALSE;
 
 	initSdl(HEIGHT, WIDTH, "Télécommande");
+
+	SDL_Color counterColor = {0, 0, 0};
+	TTF_Font * roboto = loadFont("media/Roboto-Light.ttf");
+	//displayText("Compte-tour :", roboto, counterColor, 500, 20, 1);
 
 	t_texture speedTextures[N_SPEED_TEXTURES];
 	t_texture dirTextures[N_DIR_TEXTURES];
@@ -44,10 +50,13 @@ int main(){
 	drawAllTextures(speedTextures, N_SPEED_TEXTURES);
 	drawAllTextures(dirTextures, N_DIR_TEXTURES);
 
+
 	render();
 
+	int lastTime = 0, currentTime;
+
 	while(quit == FALSE){
-      	if(SDL_WaitEvent(&event) != 0){
+      	if(SDL_PollEvent(&event) != 0){
 			switch(event.type){
 		   		case SDL_KEYDOWN:
 		   			switch(event.key.keysym.sym){
@@ -57,6 +66,7 @@ int main(){
 
 				//En cas de click gauche
 				case SDL_MOUSEBUTTONDOWN:
+					render();
 					if(event.button.button == SDL_BUTTON_LEFT){
 
 						int x = event.motion.x;
@@ -131,10 +141,10 @@ int main(){
 							// On a appuyé sur l'essui glace
 							if(isWindscreenOn){
 								draw(windscreenOff, IMG_W, IMG_H);
-								execCommand("essuieGlace 0");
+								execCommand("suieGlace 0");
 							} else {
 								draw(windscreenOn, IMG_W, IMG_H);
-								execCommand("essuieGlace 1");
+								execCommand("suieGlace 1");
 							}
 							isWindscreenOn = !isWindscreenOn;
 							render();
@@ -146,7 +156,26 @@ int main(){
 				default: break;
 		   	 }
 	 	}
+
+		/*currentTime = SDL_GetTicks();
+		if(currentTime > lastTime + 30) {
+        	//printf("ffsdf\n");
+			initRandom();
+			if(didItHappen(50)){
+				data = readData();
+				char counter[100];
+				sprintf(counter, "Compte-tour : %i  ", data * 1000);
+				displayText(counter, roboto, counterColor, 500, 20, 1);
+			}
+			render();
+
+        	lastTime = currentTime;
+
+    	} else {
+			SDL_Delay(30 - (currentTime - lastTime));
+		}*/
 	}
+
 
 	unloadAllTextures(speedTextures, N_SPEED_TEXTURES);
 	unloadAllTextures(dirTextures, N_DIR_TEXTURES);
@@ -162,6 +191,7 @@ int main(){
 	SDL_DestroyTexture(selectionClearSpeed.texture);
 	SDL_DestroyTexture(selectionClearDir.texture);
 
+	TTF_CloseFont(roboto);
 
 	quitSdl();
 }

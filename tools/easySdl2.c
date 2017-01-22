@@ -26,6 +26,8 @@ int initSdl(int height, int width, char * wName) {
 		fprintf (stderr, " Failure: unable to load the SDL\n %s", SDL_GetError());
 		return -1;
 	}
+	TTF_Init();
+
 
 	gMainWindow.window = SDL_CreateWindow (wName, SDL_WINDOWPOS_CENTERED/*col*/, SDL_WINDOWPOS_CENTERED/*line*/, width, height, wflags);
 
@@ -52,6 +54,7 @@ int initSdl(int height, int width, char * wName) {
 }
 
 void quitSdl () {
+	TTF_Quit();
 	SDL_DestroyRenderer(gMainWindow.renderer);
 	SDL_DestroyWindow(gMainWindow.window);
 	SDL_Quit();
@@ -136,4 +139,29 @@ SDL_Texture * wloadTexture (t_window win, char name[100]) {
 		printf(" Failure: loadTexture (%s)\n Error: %s", name, SDL_GetError());
 	}
 	return texture;
+}
+
+TTF_Font * loadFont(char * font){
+	return TTF_OpenFont(font, 30);
+}
+
+void displayText(char * msg, TTF_Font *font, SDL_Color color, int x, int y, float size){
+
+	int texW = 0;
+	int texH = 0;
+
+	SDL_Color BG_COLOR = {236, 240, 241};
+	SDL_Surface * surface = TTF_RenderText_Shaded(font, msg, color, BG_COLOR);
+	SDL_Texture * texture = SDL_CreateTextureFromSurface(gMainWindow.renderer, surface);
+
+	if(surface == NULL) printf("sdfsdffsdsdfsdfs\n");
+
+	SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+	SDL_Rect dstrect = {x, y, texW*size, texH*size};
+
+	SDL_RenderCopy(gMainWindow.renderer, texture, NULL, &dstrect);
+
+	SDL_DestroyTexture(texture);
+	SDL_FreeSurface(surface);
+
 }
