@@ -66,7 +66,7 @@ int main(){
 
 				//En cas de click gauche
 				case SDL_MOUSEBUTTONDOWN:
-					render();
+					//render();
 					if(event.button.button == SDL_BUTTON_LEFT){
 
 						int x = event.motion.x;
