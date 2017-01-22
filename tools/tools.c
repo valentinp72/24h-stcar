@@ -127,6 +127,11 @@ void switchAB(int * a, int * b){
 	*b = tmp;
 }
 
+int invert(int val, int a, int b){
+	if(val == a) return b;
+	return a;
+}
+
 /*
  * Test if val is in [a;b]
  * 		val > Value to check

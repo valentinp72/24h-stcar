@@ -13,7 +13,7 @@
 #define N_SPEED_TEXTURES 5
 #define N_DIR_TEXTURES 3
 
-#define SCREEN_NAME "37411.ttys000.MBP-Valentin-2"
+#define SCREEN_NAME "56293.ttys000.MBP-Valentin-2"
 
 typedef struct {
 	int line, col;
@@ -84,12 +84,17 @@ void turn(int dir){
 	}
 }
 
+int clickedOnTexture(t_texture texture, int x, int y){
+	return (y > texture.line && y < texture.line + IMG_H && x > texture.col && x < texture.col + IMG_W);
+}
+
 int main(){
 
 	SDL_Event event;
 
     int quit = FALSE;
 	int i, found = FALSE;
+	int isLampOn = FALSE, isWindscreenOn = FALSE;
 
 	initSdl(HEIGHT, WIDTH, "Télécommande");
 
@@ -114,7 +119,7 @@ int main(){
 	draw(selectionSpeed, IMG_W + 40, IMG_H);
 	draw(selectionDir, IMG_W, IMG_H + 40);
 
-	draw(lampOn, IMG_W, IMG_H);
+	draw(lampOff, IMG_W, IMG_H);
 	draw(windscreenOff, IMG_W, IMG_H);
 	drawAllTextures(speedTextures, N_SPEED_TEXTURES);
 	drawAllTextures(dirTextures, N_DIR_TEXTURES);
@@ -174,6 +179,31 @@ int main(){
 							}
 						}
 
+						// ** Lampe ** //
+						if(clickedOnTexture(lampOn, x, y)){
+							// On a appuyé sur la lampe
+							if(isLampOn){
+								draw(lampOff, IMG_W, IMG_H);
+								execCommand("lamp 0");
+							} else {
+								draw(lampOn, IMG_W, IMG_H);
+							}
+							isLampOn = !isLampOn;
+							render();
+						}
+
+
+						// ** Essui glace ** //
+						if(clickedOnTexture(windscreenOn, x, y)){
+							// On a appuyé sur l'essui glace
+							if(isWindscreenOn){
+								draw(windscreenOff, IMG_W, IMG_H);
+							} else {
+								draw(windscreenOn, IMG_W, IMG_H);
+							}
+							isWindscreenOn = !isWindscreenOn;
+							render();
+						}
 
 						printf("x : %i ; y : %i\n", x, y);
 					}
